@@ -1,9 +1,13 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
 
 import application.entities.Book;
 import application.entities.Catalogue;
@@ -11,6 +15,7 @@ import application.entities.Magazine;
 import application.entities.Periodicity;
 
 public class Application {
+	static File file = new File("testo.txt");
 
 	public static void main(String[] args) {
 		Catalogue book1 = new Book("Libro1", 2010, 100, "MeMedesimo", "Crime");
@@ -39,10 +44,22 @@ public class Application {
 		System.out.println("Find Year: " + findYear(mediaList, 2010));
 
 		System.out.println("Find Author: " + findAuthor(mediaList, "MeMedesimo"));
+
+		try {
+			readFromPC(mediaList);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void addElem(List<Catalogue> list, Catalogue item) {
 		list.add(item);
+		try {
+			saveToPC(item);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void removElem(List<Catalogue> list, UUID id) {
@@ -69,5 +86,48 @@ public class Application {
 		List<Book> l = list.stream().filter(m -> m instanceof Book && ((Book) m).getAuthor().equals(author))
 				.map(m -> (Book) m).toList();
 		return l;
+	}
+
+	public static void saveToPC(Catalogue c) throws IOException {
+		if (c instanceof Book) {
+			String written = c.getISBN() + "@" + c.getTitle() + "@" + c.getPubblicationYear() + "@" + c.getPagesNumber()
+					+ "@" + ((Book) c).getAuthor() + "@" + ((Book) c).getGenre() + "#";
+			FileUtils.writeStringToFile(file, written, "UTF-8", true);
+		} else {
+			String writtenMagazine = c.getISBN() + "@" + c.getTitle() + "@" + c.getPubblicationYear() + "@"
+					+ c.getPagesNumber() + "@" + ((Magazine) c).getPeriodicity() + "#";
+			FileUtils.writeStringToFile(file, writtenMagazine, "UTF-8", true);
+		}
+	}
+
+	public static void readFromPC(List<Catalogue> mediaList) throws IOException {
+		if (file.exists()) {
+			String content = FileUtils.readFileToString(file, "UTF-8");
+			String[] separatedItems = content.split("#");
+			for (String string : separatedItems) {
+				String[] separatedList = content.split("@");
+				for (int i = 0; i < separatedList.length; i++) {
+					if (separatedList.length > 4) {
+						String title = separatedList[1];
+						int pubblicationYear = Integer.parseInt(separatedList[2]);
+						int pagesNumber = Integer.parseInt(separatedList[3]);
+						String author = separatedList[4];
+						String genre = separatedList[5];
+						Catalogue b = new Book(title, pubblicationYear, pagesNumber, author, genre);
+						mediaList.add(b);
+					} else {
+						String title = separatedList[1];
+						int pubblicationYear = Integer.parseInt(separatedList[2]);
+						int pagesNumber = Integer.parseInt(separatedList[3]);
+						Periodicity periodicity = Periodicity.valueOf(separatedList[4]);
+						Catalogue m = new Magazine(title, pubblicationYear, pagesNumber, periodicity);
+						mediaList.add(m);
+					}
+				}
+//				System.out.println("Sono medialist: " + mediaList);
+			}
+		} else {
+			System.out.println("Nessun file presente");
+		}
 	}
 }
