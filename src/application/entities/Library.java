@@ -2,13 +2,13 @@ package application.entities;
 
 import java.util.UUID;
 
-public abstract class Catalogue {
+public abstract class Library {
 	private UUID ISBN = UUID.randomUUID();
 	private String title;
 	private int pubblicationYear;
 	private int pagesNumber;
 
-	public Catalogue(String title, int pubblicationYear, int pagesNumber) {
+	public Library(String title, int pubblicationYear, int pagesNumber) {
 		setISBN(ISBN);
 		setTitle(title);
 		setPubblicationYear(pubblicationYear);

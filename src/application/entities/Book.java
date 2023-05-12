@@ -1,6 +1,6 @@
 package application.entities;
 
-public class Book extends Catalogue {
+public class Book extends Library {
 	private String author;
 	private String genre;
 

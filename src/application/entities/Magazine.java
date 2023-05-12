@@ -1,6 +1,6 @@
 package application.entities;
 
-public class Magazine extends Catalogue {
+public class Magazine extends Library {
 	private Periodicity periodicity;
 
 	public Magazine(String title, int pubblicationYear, int pagesNumber, Periodicity periodicity) {
