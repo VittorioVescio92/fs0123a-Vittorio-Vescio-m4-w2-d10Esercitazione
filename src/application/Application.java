@@ -118,8 +118,8 @@ public class Application {
 		}
 	}
 
-	public static void readFromPC(List<Catalogue> mediaList) throws IOException {
-		mediaList.clear();
+	public static void readFromPC(List<Catalogue> arrList) throws IOException {
+		arrList.clear();
 		if (file.exists()) {
 			String content = FileUtils.readFileToString(file, "UTF-8");
 			String[] separatedItems = content.split("#");
@@ -133,24 +133,20 @@ public class Application {
 						String author = separatedList[4];
 						String genre = separatedList[5];
 						Catalogue b = new Book(title, pubblicationYear, pagesNumber, author, genre);
-						if (!mediaList.contains(b)) {
-							mediaList.add(b);
-						}
+						arrList.add(b);
 					} else {
 						String title = separatedList[1];
 						int pubblicationYear = Integer.parseInt(separatedList[2]);
 						int pagesNumber = Integer.parseInt(separatedList[3]);
 						Periodicity periodicity = Periodicity.valueOf(separatedList[4]);
 						Catalogue m = new Magazine(title, pubblicationYear, pagesNumber, periodicity);
-						if (!mediaList.contains(m)) {
-							mediaList.add(m);
-						}
+						arrList.add(m);
 					}
 				}
 			}
 		} else {
 			System.out.println("Nessun file presente");
 		}
-		System.out.println("Sono un elenco di elementi: " + mediaList);
+		System.out.println("Sono un elenco di elementi letti da file e scritti in un ArrayList : " + arrList);
 	}
 }
