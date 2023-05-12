@@ -33,23 +33,43 @@ public class Application {
 		addElem(mediaList, magazine2);
 		addElem(mediaList, magazine3);
 
+		System.out.println("**********  1 **********");
 		System.out.println("Lista libri/magazine: " + mediaList);
 
 		removElem(mediaList, book1.getISBN());
 
+		System.out.println("**********  2 **********");
 		System.out.println("Lista libri/magazine dopo il remove: " + mediaList);
 
-		System.out.println("Find ISBN: " + findISBN(mediaList, magazine1.getISBN()));
+		System.out.println("**********  3 **********");
+		Catalogue foundTroughISBN = findTroughISBN(mediaList, magazine1.getISBN());
+		if (foundTroughISBN != null) {
+			System.out.println("Find ISBN: " + foundTroughISBN);
+		} else {
+			System.out.println("File non trovato!");
+		}
 
-		System.out.println("Find Year: " + findYear(mediaList, 2010));
+		System.out.println("**********  4 **********");
+		List<Catalogue> foundTroughYear = findTroughYear(mediaList, 2010);
+		if (foundTroughYear.size() > 0) {
+			System.out.println("Find Year: " + foundTroughYear);
+		} else {
+			System.out.println("File non trovato!");
+		}
 
-		System.out.println("Find Author: " + findAuthor(mediaList, "MeMedesimo"));
+		System.out.println("**********  5 **********");
+		List<Book> authorFound = findAuthor(mediaList, "MeMedesimo");
+		if (authorFound.size() > 0) {
+			System.out.println("Find Author: " + authorFound);
+		} else {
+			System.out.println("File non trovato!");
+		}
 
+		System.out.println("**********  6 **********");
 		try {
 			readFromPC(mediaList);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("File non trovato!");
 		}
 	}
 
@@ -58,7 +78,7 @@ public class Application {
 		try {
 			saveToPC(item);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Elemento non trovato!");
 		}
 	}
 
@@ -66,18 +86,16 @@ public class Application {
 		Iterator<Catalogue> i = list.iterator();
 		while (i.hasNext()) {
 			Catalogue curr = i.next();
-			if (curr.getISBN().equals(id)) {
-				i.remove();
-			}
+			curr.getISBN().equals(id);
 		}
 	}
 
-	public static Catalogue findISBN(List<Catalogue> list, UUID id) {
+	public static Catalogue findTroughISBN(List<Catalogue> list, UUID id) {
 		Catalogue m = list.stream().filter(media -> media.getISBN().equals(id)).findAny().orElse(null);
 		return m;
 	}
 
-	public static List<Catalogue> findYear(List<Catalogue> list, int pubYear) {
+	public static List<Catalogue> findTroughYear(List<Catalogue> list, int pubYear) {
 		List<Catalogue> p = list.stream().filter(media -> media.getPubblicationYear() == pubYear).toList();
 		return p;
 	}
@@ -101,33 +119,38 @@ public class Application {
 	}
 
 	public static void readFromPC(List<Catalogue> mediaList) throws IOException {
+		mediaList.clear();
 		if (file.exists()) {
 			String content = FileUtils.readFileToString(file, "UTF-8");
 			String[] separatedItems = content.split("#");
 			for (String string : separatedItems) {
-				String[] separatedList = content.split("@");
+				String[] separatedList = string.split("@");
 				for (int i = 0; i < separatedList.length; i++) {
-					if (separatedList.length > 4) {
+					if (separatedList.length > 5) {
 						String title = separatedList[1];
 						int pubblicationYear = Integer.parseInt(separatedList[2]);
 						int pagesNumber = Integer.parseInt(separatedList[3]);
 						String author = separatedList[4];
 						String genre = separatedList[5];
 						Catalogue b = new Book(title, pubblicationYear, pagesNumber, author, genre);
-						mediaList.add(b);
+						if (!mediaList.contains(b)) {
+							mediaList.add(b);
+						}
 					} else {
 						String title = separatedList[1];
 						int pubblicationYear = Integer.parseInt(separatedList[2]);
 						int pagesNumber = Integer.parseInt(separatedList[3]);
 						Periodicity periodicity = Periodicity.valueOf(separatedList[4]);
 						Catalogue m = new Magazine(title, pubblicationYear, pagesNumber, periodicity);
-						mediaList.add(m);
+						if (!mediaList.contains(m)) {
+							mediaList.add(m);
+						}
 					}
 				}
-//				System.out.println("Sono medialist: " + mediaList);
 			}
 		} else {
 			System.out.println("Nessun file presente");
 		}
+		System.out.println("Sono un elenco di elementi: " + mediaList);
 	}
 }
