@@ -19,8 +19,8 @@ public abstract class Library {
 		return ISBN;
 	}
 
-	public void setISBN(UUID iSBN) {
-		ISBN = iSBN;
+	public void setISBN(UUID ISBN) {
+		ISBN = ISBN;
 	}
 
 	public String getTitle() {
